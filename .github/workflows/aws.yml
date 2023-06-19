@@ -35,7 +35,12 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: apply terraform        # Apply the terraform code present in the repository
-        run: terraform init && terraform apply --auto-approve
+        run: |
+          terraform init && terraform apply -target aws_route53_zone.zone --auto-approve
+          terraform output ns-records
+          sleep 300
+          terraform apply --auto-approve
+          
         working-directory: tfproject
 
       - name: Login to Amazon ECR
