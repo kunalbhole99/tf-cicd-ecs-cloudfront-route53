@@ -1,0 +1,81 @@
+name: tf-ecs-automation
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AWS_REGION: "ap-south-1"
+  IMAGE_TAG: "latest"
+  ECR_REPOSITORY: "tf-dockerrepo"
+  TASK_DEFINITION: "task-definition.json"
+  TASK_DEFINITION_FAMILY: "app-task"
+  CONTAINER_NAME: "app"
+  SERVICE: "ecs-service"
+  CLUSTER: "my-app-cluster"
+
+permissions:        # this is required for aws role to work
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    name: terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout                     # would be checkout to pull the code from the repo
+        uses: actions/checkout@v2
+
+      - name: configure aws credentials         # get the credentials from aws using assume role
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::424736085230:role/Github
+          role-session-name: Github
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: apply terraform        # Apply the terraform code present in the repository
+        run: terraform init && terraform apply --auto-approve
+        working-directory: tfproject
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: build, tag and push the docker image to amazon ecr
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        run: |              # app folder to store the docker file of app
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./app/       
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: export task definition
+        id: export-td
+        env:
+          TD_NAME: ${{ env.TASK_DEFINITION}}
+          TD_FAMILY: ${{ env.TASK_DEFINITION_FAMILY}}
+        run: |
+          rm -rf $TD_NAME
+          aws ecs describe-task-definition --task-definition $TD_FAMILY --query taskDefinition > $TD_NAME
+
+      - name: check exported task definition
+        run: |
+          ls
+
+      - name: update the image in the task definition         # update the image in the task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition/@v1
+        with:
+          task-definition: ${{ env.TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: deploy task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ env.TASK_DEFINITION }}
+          service: ${{ env.SERVICE }}
+          cluster: ${{ env.CLUSTER }}
