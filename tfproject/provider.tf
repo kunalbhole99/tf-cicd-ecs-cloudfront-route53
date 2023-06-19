@@ -11,7 +11,7 @@ terraform {
   backend "s3" {
     bucket = "my-terraform-backend-statefile"
     region = "ap-south-1"
-    key    = "tf-serverless-website/tfproject.tfstate"
+    key    = "tf-ecs-route53-project/tfproject.tfstate"
   }
 }
 
