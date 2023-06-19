@@ -10,7 +10,7 @@ resource "aws_cloudfront_distribution" "cdn_static_site" {
   origin {
     domain_name              = aws_alb.app_lb.dns_name
     origin_id                = "my-alb-origin"
-    origin_access_control_id = aws_cloudfront_origin_access_control.default.id
+   # origin_access_control_id = aws_cloudfront_origin_access_control.default.id
   }
 
   default_cache_behavior {
@@ -51,10 +51,10 @@ resource "aws_cloudfront_distribution" "cdn_static_site" {
 
 ###################### aws_cloudfront_origin_access_control ###################
 
-resource "aws_cloudfront_origin_access_control" "default" {
-  name                              = "cloudfront OAC"
-  description                       = "description of OAC"
-  origin_access_control_origin_type = "mediastore"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
-}
+# resource "aws_cloudfront_origin_access_control" "default" {
+#   name                              = "cloudfront OAC"
+#   description                       = "description of OAC"
+#   origin_access_control_origin_type = "mediastore"
+#   signing_behavior                  = "always"
+#   signing_protocol                  = "sigv4"
+# }
