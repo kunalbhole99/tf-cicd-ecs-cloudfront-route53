@@ -30,7 +30,7 @@ resource "aws_route53_record" "cert_validation" {
 */
 
 resource "aws_route53_record" "validation_record_1" {
-  zone_id = aws_route53_zone.example_zone.zone_id
+  zone_id = aws_route53_zone.zone.zone_id
   name    = "*.wearecloudengineer.monster"  # Replace with the actual validation domain name provided by ACM
   type    = "CNAME"
   ttl     = 300
@@ -38,7 +38,7 @@ resource "aws_route53_record" "validation_record_1" {
 }
 
 resource "aws_route53_record" "validation_record_2" {
-  zone_id = aws_route53_zone.example_zone.zone_id
+  zone_id = aws_route53_zone.zone.zone_id
   name    = "wearecloudengineer.monster"  # Replace with the actual validation domain name provided by ACM
   type    = "CNAME"
   ttl     = 300
