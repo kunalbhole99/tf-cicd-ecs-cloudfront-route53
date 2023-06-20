@@ -27,7 +27,7 @@ resource "aws_route53_record" "cert_validation" {
   ttl             = 60
 }
 
-*/
+
 
 resource "aws_route53_record" "validation_record_1" {
   zone_id = aws_route53_zone.zone.zone_id
@@ -45,6 +45,7 @@ resource "aws_route53_record" "validation_record_2" {
   records = [aws_acm_certificate.cert.domain_validation_options[1].resource_record_name]
 }
 
+*/
 ################# AWS Route53 'A' Record creation for cloudfront distribution ##################
 
 resource "aws_route53_record" "www" {

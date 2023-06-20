@@ -12,8 +12,8 @@ resource "aws_acm_certificate" "cert" {
 
 ##################### AWS ACM Certificate validation ##################
 
-resource "aws_acm_certificate_validation" "cert" {
-  provider                = aws.north_virginia
-  certificate_arn         = aws_acm_certificate.cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
-}
+# resource "aws_acm_certificate_validation" "cert" {
+#   provider                = aws.north_virginia
+#   certificate_arn         = aws_acm_certificate.cert.arn
+#   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
+# }
