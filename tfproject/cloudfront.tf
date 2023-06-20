@@ -4,13 +4,19 @@
 resource "aws_cloudfront_distribution" "cdn_static_site" {
   enabled             = true
   is_ipv6_enabled     = true
-  #default_root_object = "index.html"
+  default_root_object = "index.html"
   comment             = "my cloudfront in front of the alb"
 
   origin {
     domain_name              = aws_alb.app_lb.dns_name
     origin_id                = "my-alb-origin"
    # origin_access_control_id = aws_cloudfront_origin_access_control.default.id
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.1", "TLSv1.2"]
+    }
   }
 
   default_cache_behavior {
