@@ -8,7 +8,7 @@ resource "aws_route53_zone" "zone" {
 }
 
 
-
+/*
 resource "aws_route53_record" "cert_validation" {
   provider = aws.north_virginia
   for_each = {
@@ -27,6 +27,23 @@ resource "aws_route53_record" "cert_validation" {
   ttl             = 60
 }
 
+*/
+
+resource "aws_route53_record" "validation_record_1" {
+  zone_id = aws_route53_zone.example_zone.zone_id
+  name    = "*.wearecloudengineer.monster"  # Replace with the actual validation domain name provided by ACM
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_acm_certificate.cert.domain_validation_options[0].resource_record_name]
+}
+
+resource "aws_route53_record" "validation_record_2" {
+  zone_id = aws_route53_zone.example_zone.zone_id
+  name    = "wearecloudengineer.monster"  # Replace with the actual validation domain name provided by ACM
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_acm_certificate.cert.domain_validation_options[1].resource_record_name]
+}
 
 ################# AWS Route53 'A' Record creation for cloudfront distribution ##################
 

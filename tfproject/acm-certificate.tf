@@ -1,7 +1,7 @@
 resource "aws_acm_certificate" "cert" {
   provider                  = aws.north_virginia
   domain_name               = "*.${var.domain_name_simple}"
-  validation_method         = "DNS"
+  validation_method         = "EMAIL"
   subject_alternative_names = [var.domain_name_simple]
 
   lifecycle {
