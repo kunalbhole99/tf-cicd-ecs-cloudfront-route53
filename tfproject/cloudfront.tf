@@ -21,8 +21,8 @@ resource "aws_cloudfront_distribution" "cdn_static_site" {
 
   default_cache_behavior {
     min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
+    default_ttl            = 0
+    max_ttl                = 0
     viewer_protocol_policy = "allow-all"
 
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
